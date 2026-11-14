@@ -1,0 +1,59 @@
+{
+  "summary": "First full run on giftaol.ca v0.11. Backend: 17 pytest tests, all pass (auth, httpOnly cookie, bcrypt, brute-force lockout, verify-code, daily code limit 429, change password, non-admin 403, checkout min/max, demo-confirm + double-confirm 409, Harmony lookup/redeem, idempotent replay, over-balance 409, used_up, wrong-entry lock 423 + admin unlock, config min/max, content save/rollback, request logs + code masking). Frontend checked with Playwright: EN/FR switch stays after reload (localStorage giftaol_lang); CTA goes to /login?next=/gifts/new; password login works and goes to next; /login while logged in goes to /dashboard; amount error; payment step with demo banner; confirmation page shows all required elements and a 5-item next-steps list; dashboard masked code, reveal, copy, status badges (Partly used, Used up, Locked, DEMO) and redemptions list; gift detail; email-code limit message; verify-code UI (request-code mocked with page.route to save email quota); non-admin has no Admin nav and is sent from /admin to /dashboard; change password; logout; protected route returns to the original page; admin content editor (EN+FR publish, restore previous); config min change shows in the new-gift range; locked-code unlock; Hack Monitor search and filters; mobile 390px; Google button redirects via auth.emergentagent.com. Blocking problem at start: the Turnstile script was missing from the served index.html (stale dev server), so no login worked until I restarted the frontend.",
+  "backend_issues": {
+    "critical": [
+      {"endpoint": "Managed email (integrations.emergentagent.com/api/v1/email/send)", "issue": "After about 10 emails in a few minutes, the provider returned HTTP 429. send_with_retry only retries 3 times over about 6s, then gives up. Result: the gift email was marked email_status=failed ('Email not delivered' on the dashboard), the redemption emails failed, and POST /api/auth/request-code returned 502.", "priority": "HIGH"},
+      {"endpoint": "POST /api/auth/request-code", "issue": "When the email fails, the backend returns status 502. Cloudflare/ingress replaces the body, so the user sees 'The origin web server returned an invalid or incomplete response to Cloudflare...' instead of the bilingual email_failed message. Also, code_request_log is written before sending, so a failed send still uses up one of the user's 5 daily codes.", "priority": "HIGH"}
+    ],
+    "minor": [
+      {"endpoint": "POST /api/auth/verify-code", "issue": "The code never expires. created_at is stored but never checked, so an old 6-digit code works forever until it is used. The only attempt limit is in memory (10 per 15 min per email) and is lost when the backend restarts."},
+      {"endpoint": "POST /api/admin/content/rollback", "issue": "The first publish when no landing_content doc exists does not archive a version. The UI still adds 1 to its versions counter, so 'Restore previous' becomes enabled and a click returns 404. Seen in UI: after save1, the rollback button was enabled with 0 versions in the DB."},
+      {"endpoint": "server.py CORS", "issue": "CORS_ORIGINS='*' is used with allow_credentials=True. Use an explicit origin list."},
+      {"endpoint": "PUT /api/admin/content", "issue": "en/fr are free-form dicts with no schema validation."},
+      {"endpoint": "Harmony _find_gift", "issue": "wrong_entries is not reset after a correct lookup. Wrong entries made long apart still add up toward the lock."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "public/index.html / dev server", "issue": "The served HTML was stale: no Turnstile <script>, old meta description. window.turnstile was undefined, so every login and send-code failed with 'Please complete the security check first.' A frontend restart fixed it. After changing public/index.html, always restart the frontend and check that the served HTML has the script.", "selector": "[data-testid='login-turnstile-container']", "priority": "HIGH (fixed by restart)"},
+      {"component": "Admin Content Editor at 390px", "issue": "Horizontal scroll (scrollWidth 468 vs 390). The hero image preview row (file input + img w-20) and the list fieldsets overflow.", "selector": "[data-testid='admin-content-editor']", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [
+      {"flow": "Request code when email fails", "issue": "The Cloudflare error text is shown in request-code-error (see the backend 502 issue).", "affected_selectors": ["[data-testid='request-code-error']"]},
+      {"flow": "Page-visit tracking", "issue": "In dev, React.StrictMode runs the tracking effect twice, so every page view is logged twice. The second entry has referrer = its own URL. Use a guard against double runs. Production builds are not affected."}
+    ],
+    "design_issues": [
+      {"screen": "Hack Monitor at 390px", "issues": ["Table rows are very tall and need sideways scrolling to see URL, referrer and status. Consider a card layout on mobile."]},
+      {"screen": "Dashboard gift card at 390px", "issues": ["The 'Balance / Amount' label is indented and does not line up with the amount below it."]},
+      {"screen": "Admin tabs at 390px", "issues": ["The tab list wraps and 'Hack monitor' sits centered on its own line."]},
+      {"screen": "Content editor", "issues": ["Uses the browser's default 'Choose File' input. Use a styled upload button."]},
+      {"screen": "Admin Locked codes", "issues": ["Shows 'Loading…' with no skeleton. Minor."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_giftaol_api.py", "/app/backend/tests/conftest.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Handle managed-email 429: longer backoff, or queue a background retry for gift and redemption emails. Do not mark the gift email as permanently failed after about 6s.",
+    "Return 503 (or a 200 with an error flag) instead of 502 from request-code and resend-email, so ingress/Cloudflare does not replace the response. Add a frontend fallback message for non-JSON errors.",
+    "Write code_request_log only after the email is sent (or remove the entry when sending fails).",
+    "Expire email verification codes, e.g. 15 minutes using created_at, and limit attempts per code in the DB.",
+    "Fix the content editor versions counter: use the versions value returned by the server after save and rollback.",
+    "Fix horizontal overflow in the Admin Content Editor on mobile.",
+    "Set explicit CORS origins.",
+    "After any change to public/index.html, restart the frontend and confirm the Turnstile script is in the served HTML."
+  ],
+  "critical_code_review_comments": [
+    "routes_auth.verify_code: does not check code age. It also resets the password of any existing user (including Google users), which works as a password reset. That is fine as long as the code has a short expiry.",
+    "routes_auth.request_code: the daily limit is checked with count-then-insert, which can race. Low risk.",
+    "routes_harmony._find_gift: the wrong-entry check only runs on the first 8 characters. Entries shorter than 8 characters never count toward the lock (acceptable).",
+    "server.py: tracking of the '/api/track' page path does not mask codes if a code ever appears in a frontend URL or query string. Currently none do.",
+    "Rate limits are in memory and per process. They reset on restart and are not shared if there are several workers."
+  ],
+  "updated_files": ["/app/backend/tests/conftest.py", "/app/backend/tests/test_giftaol_api.py"],
+  "success_rate": {"backend": "100% (17/17 pytest); email delivery degraded by provider 429", "frontend": "~90% (all requested flows work after the frontend restart; mobile admin overflow and the email-failure message are open)"},
+  "seed_data_creation": "Test users, gifts, payments, redemptions, code logs and verifications were created and then deleted by id or email. landing_content and app_config did not exist before testing, so I deleted them afterwards (the app is back to defaults). The Harmony key was rotated several times, so the current active key is a new one created by the tests: rotate again before any real Harmony integration. Request logs from testing are kept.",
+  "test_credentials": "Admin nagendracv@gmail.com / GiftAdmin#2026 (from /app/memory/test_credentials.md) worked.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run: cd /app/backend && python -m pytest tests -n 0 -v. The tests clean up after themselves and need -n 0 because they share config state. Each full run sends about 5 real emails (gift and redemption emails to example.com, plus one to delivered@resend.dev), and the managed email returns 429 quickly, so avoid repeated runs or mock email. In Playwright, mock /api/auth/request-code with page.route and upsert an HMAC code hash in email_verifications (see /tmp/seedcode.py pattern) to test verify-code. The Turnstile test widget auto-passes in headless Chrome once api.js loads (wait about 4s before submitting).",
+  "rca of the issue": "Login broken at start: the CRA dev server was serving an older index.html without the Turnstile api.js tag (index.html had been edited at 16:54 and not picked up), so window.turnstile was undefined and no token was produced. Fixed with 'sudo supervisorctl restart frontend'. 'Email not delivered' / Cloudflare error: the backend logs show integrations.emergentagent.com email/send returning 429 Too Many Requests. send_with_retry gives up after 3 quick tries, request-code returns 502, and the edge replaces the 502 body."
+}

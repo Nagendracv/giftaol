@@ -1,0 +1,35 @@
+{
+  "summary": "Iteration 2 tested the guest 'Give a gift' flow. Backend: 7/7 new pytest tests pass for POST /api/auth/verify-code-login. Wrong code or no entry gives 400 and increments wrong_attempts. Bad input gives 422. A valid code (spaces trimmed) sets an httpOnly access_token cookie, creates a new user with password_set=false and no password hash, and the code cannot be reused. An existing user logs in with the same id and an unchanged password hash. A new guest user can check out and demo-confirm. Admin password login still works. /auth/me without a session gives 401. One real request-code call returned 200. Frontend (Playwright, request-code mocked): logged out, the hero CTA opens /gifts/new directly. The email input, email note, Turnstile, 'Continue to next step' button and '1 / 3' indicator are all shown. Amount 5 shows gift-amount-error and no request-code call is made. A valid amount and email lead to the verify step (2 / 3) with the exact message text. The continue button stays disabled after a wrong code, and gift-verify-error is shown. A valid code shows gift-verify-success and enables the button. Payment (3 / 3) shows the demo banner and $150.00, and demo pay goes to /gifts/:id?new=1. The header then shows Dashboard and Log out. FR: 'Passer à l'étape suivante', 'Vérifiez votre courriel', the note and the verify message are translated, and FR verify works. Logged in (both the guest-created user and the admin via /login): no email field, 'Continue to payment', '1 / 2', and payment shows '2 / 2'. Back keeps the amount. Logged out, /dashboard redirects to /login?next=%2Fdashboard. At 390px, /gifts/new and the verify step have no horizontal scroll (scrollWidth 390).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "POST /api/auth/verify-code-login (_consume_code)", "issue": "Still no code expiry (created_at is never checked). Since this endpoint now logs a user in with just the email code, an old unused code stays valid forever. This includes the admin account: a code sent to the admin email logs in as admin with no password. Add a TTL (e.g. 15 min)."},
+      {"endpoint": "_consume_code rate limit", "issue": "The per-email and per-IP attempt limits are in memory only. The DB wrong_attempts counter (10 tries) is the durable guard."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "/gifts/new step changes (mobile 390px)", "issues": ["When moving from details to verify (and to payment), the page keeps its scroll position. On mobile the verify step opens part-way down, and the step indicator is under or near the sticky header. Add window.scrollTo(0,0) when the step changes."]},
+      {"screen": "Payment step after the guest flow", "issues": ["Back from payment goes to the details step showing '1 / 3', and the user is now logged in. Harmless, but the 3-step indicator is then slightly off. Minor."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_guest_gift_flow.py", "/app/backend/tests/test_giftaol_api.py", "/app/test_reports/pytest/pytest_results_iter2.xml"],
+  "action_items": [
+    "Add a code expiry check in _consume_code (created_at + 15 min). It matters more now that verify-code-login gives a session without a password.",
+    "Scroll to top when the NewGift step changes (minor UX on mobile)."
+  ],
+  "critical_code_review_comments": [
+    "routes_auth.verify_code_login: logging in by email code alone is by design, but without expiry or a per-code attempt cap in time, an old leaked code works forever.",
+    "NewGift.jsx: the guest email input relies only on the HTML 'required' attribute and the browser's own email check. There is no JS check, so the backend 422 would be shown via errMsg if the browser check is bypassed. Acceptable.",
+    "NewGift.jsx: duplicate lucide-react imports (CheckCircle2 imported separately). Cosmetic."
+  ],
+  "updated_files": ["/app/backend/tests/test_guest_gift_flow.py"],
+  "success_rate": {"backend": "100% (7/7)", "frontend": "100% of requested flows"},
+  "seed_data_creation": "TEST_/test_ users, email_verifications rows, and 2 gifts with their payments (1 via pytest, 1 via UI) were created and then deleted by email and giver id. One real code email was sent to delivered@resend.dev, and its code_request_log entry was removed. No seed or admin data was changed.",
+  "test_credentials": "Admin nagendracv@gmail.com / GiftAdmin#2026 works. The /login testids are auth-email-input, auth-password-input and auth-login-submit-btn.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Guest flow test pattern: run python /tmp/seedcode.py <email> to upsert the hash for code 654321. Mock **/api/auth/request-code with page.route returning {sent:true}, and wait about 4s for Turnstile to auto-pass. Run backend tests: cd /app/backend && python -m pytest tests/test_guest_gift_flow.py -n 0 -v (about 1 gift email per run)."
+}

@@ -1,0 +1,217 @@
+{
+  "project_name": "giftaol.ca",
+  "archetype": "ORGANIC & EARTHY + SWISS CLARITY",
+  "theme": "Light Warm Mindful Theme",
+  "file_extension": "js/jsx",
+  "typography": {
+    "font_families": {
+      "heading": "Cormorant Garamond, serif",
+      "sans": "Plus Jakarta Sans, sans-serif",
+      "mono": "JetBrains Mono, monospace"
+    },
+    "scale": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl font-serif tracking-tight leading-tight",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl font-serif tracking-tight leading-snug",
+      "h3": "text-xl sm:text-2xl font-sans font-semibold text-slate-900 tracking-tight",
+      "h4": "text-lg sm:text-xl font-sans font-medium text-slate-800",
+      "body": "text-base font-sans leading-relaxed text-slate-700",
+      "body_sm": "text-sm font-sans leading-normal text-slate-600",
+      "label": "text-xs font-sans font-semibold uppercase tracking-widest text-amber-800",
+      "code": "font-mono font-bold tracking-widest text-amber-900 bg-amber-100/80 px-3 py-1.5 rounded-md"
+    }
+  },
+  "colors": {
+    "palette": {
+      "background": "#FAF7F2",
+      "surface": "#FFFFFF",
+      "surface_subtle": "#F5EFF",
+      "primary": "#D95D39",
+      "primary_hover": "#C24C29",
+      "primary_light": "#FDF2EE",
+      "secondary": "#2A4736",
+      "secondary_hover": "#1E3527",
+      "secondary_light": "#EBF2ED",
+      "accent_gold": "#E3A008",
+      "accent_amber": "#F59E0B",
+      "text_dark": "#1C1917",
+      "text_muted": "#57534E",
+      "border": "#E7E5E4",
+      "status_active": "#16A34A",
+      "status_partly": "#D97706",
+      "status_used": "#78716C",
+      "status_danger": "#DC2626"
+    },
+    "tailwind_classes": {
+      "page_bg": "bg-[#FAF7F2] text-stone-900 antialiased min-h-screen",
+      "card_bg": "bg-white border border-stone-200/80 shadow-sm rounded-2xl p-6 sm:p-8",
+      "card_glass": "bg-white/80 backdrop-blur-md border border-stone-200/60 shadow-md rounded-2xl p-6 sm:p-8",
+      "header_bg": "bg-white/85 backdrop-blur-xl border-b border-stone-200/70 sticky top-0 z-50",
+      "primary_btn": "bg-[#D95D39] hover:bg-[#C24C29] text-white font-medium px-6 py-3 rounded-xl shadow-sm hover:shadow transition-all duration-200 ease-in-out active:scale-[0.98]",
+      "secondary_btn": "bg-[#2A4736] hover:bg-[#1E3527] text-white font-medium px-6 py-3 rounded-xl shadow-sm transition-all duration-200 ease-in-out active:scale-[0.98]",
+      "outline_btn": "bg-transparent border border-stone-300 hover:bg-stone-100/80 text-stone-800 font-medium px-5 py-2.5 rounded-xl transition-all duration-200",
+      "code_card": "bg-amber-50/90 border border-amber-200/80 rounded-xl p-4 font-mono text-center tracking-widest font-bold text-amber-950 shadow-inner"
+    }
+  },
+  "layout_and_spacing": {
+    "mobile_first": true,
+    "gutters": "px-4 sm:px-6 lg:px-12",
+    "max_width": "max-w-7xl mx-auto",
+    "section_spacing": "py-12 sm:py-20 lg:py-24",
+    "card_grid": "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8",
+    "bento_hero": "grid grid-cols-1 lg:grid-cols-12 gap-8 items-center"
+  },
+  "components_and_pages": {
+    "header": {
+      "elements": [
+        "Brand Logo Slot (Text/Icon placeholder until user logo is uploaded)",
+        "Language Switcher Toggle (EN / FR) with clear visual pill state",
+        "Nav Links: Home, Program Highlights, FAQ, Dashboard, Admin",
+        "Auth Buttons: Login / Signup or User Profile Dropdown",
+        "Mobile Menu Sheet/Drawer for responsive screens"
+      ],
+      "data_testids": [
+        "header-logo",
+        "language-switcher-en-btn",
+        "language-switcher-fr-btn",
+        "nav-home-link",
+        "nav-dashboard-link",
+        "nav-admin-link",
+        "nav-login-btn",
+        "nav-logout-btn",
+        "mobile-menu-trigger"
+      ]
+    },
+    "landing_page": {
+      "sections": [
+        "Hero: Warm mindful headline, subtext about word-of-mouth gifting for Art of Living Canada, 'Give a Gift' primary CTA, 'Learn More' secondary CTA",
+        "Bilingual Hero Badge: 'Art of Living Canada / L'Art de vivre Canada'",
+        "Program Highlights: Cards for Happiness Program, Sudarshan Kriya, Sahaj Samadhi Meditation, Harmony Course Integration",
+        "How Gifting Works: 3-Step visual process (1. Choose CAD amount & message -> 2. Receive 16-char code -> 3. Newcomer redeems code for Harmony course)",
+        "FAQ Accordion: Admin-editable bilingual FAQs",
+        "Impact / Testimonials Banner: Soft warm organic stat boxes"
+      ],
+      "data_testids": [
+        "hero-give-gift-cta",
+        "hero-learn-more-cta",
+        "program-highlight-card-0",
+        "program-highlight-card-1",
+        "faq-accordion",
+        "faq-item-0"
+      ]
+    },
+    "auth_flow": {
+      "features": [
+        "Tabbed Login / Register options",
+        "Email + One-time code (OTP) request & entry step",
+        "Set Password & Password Login options",
+        "Google OAuth sign-in button with clean branding",
+        "Cloudflare Turnstile placeholder / verification box",
+        "Bilingual input labels & error messages"
+      ],
+      "data_testids": [
+        "auth-email-input",
+        "auth-send-code-btn",
+        "auth-otp-input",
+        "auth-password-input",
+        "auth-login-submit-btn",
+        "auth-google-login-btn",
+        "auth-turnstile-container"
+      ]
+    },
+    "dashboard_page": {
+      "features": [
+        "Overview Cards: Total Balance, Active Gifts Count, Total Gifts Given, Redemptions Count",
+        "My Gifts Table/List: Date, Recipient Name/Email, Masked Code with 'Reveal Code' toggle eye icon and 'Copy' button, Amount, Balance Left, Status Badge (Active: green, Partly used: amber, Used up: gray)",
+        "Redemptions Activity Table: Code used, Course Name, Redeemer name, Date, Amount Applied",
+        "Action Bar: 'New Gift' primary CTA",
+        "Account Settings Tab: Change password, email notification preferences, logout"
+      ],
+      "data_testids": [
+        "dashboard-new-gift-btn",
+        "dashboard-gifts-table",
+        "gift-masked-code-reveal-btn",
+        "gift-code-copy-btn",
+        "gift-status-badge",
+        "dashboard-account-tab",
+        "change-password-form"
+      ]
+    },
+    "new_gift_flow": {
+      "features": [
+        "Amount Selection: Presets ($50, $100, $250, $500 CAD) + custom amount slider/input bounded by min/max config",
+        "Optional Personalization: Warm gift message (500 char max with live counter), optional Recipient First Name",
+        "Explainer Box: Clear breakdown of how the 16-char gift code will be generated and used for Harmony registration",
+        "DEMO Payment Screen: Prominently labeled 'DEMO PAYMENT / MODE DÉMO' banner, mock card inputs, preset test card button, instant payment confirmation toggle"
+      ],
+      "data_testids": [
+        "gift-amount-preset-50",
+        "gift-amount-preset-100",
+        "gift-amount-custom-input",
+        "gift-message-textarea",
+        "gift-recipient-name-input",
+        "gift-proceed-payment-btn",
+        "demo-payment-submit-btn",
+        "demo-payment-warning-banner"
+      ]
+    },
+    "confirmation_page": {
+      "features": [
+        "Success celebration illustration / icon animation",
+        "16-char Gift Code Box: XXXX-XXXX-XXXX-XXXX with instant 'Copy Code' button and toast notification",
+        "Shareable Gift Card Banner: Printable/downloadable preview layout with warm graphics, message, and code",
+        "Numbered Next Steps guide for the Gift Giver (1. Copy or print -> 2. Share with newcomer -> 3. Newcomer registers for Harmony course)",
+        "Security & Expiry Notice box"
+      ],
+      "data_testids": [
+        "confirmation-gift-code",
+        "confirmation-copy-code-btn",
+        "confirmation-print-banner-btn",
+        "confirmation-next-steps"
+      ]
+    },
+    "admin_dashboard": {
+      "features": [
+        "Landing Content Editor: EN/FR tabbed form for hero titles, subheadings, program descriptions, and FAQs with live preview",
+        "System Configuration Page: Min/Max gift amounts, payment mode toggle (Demo / Live), unlock codes, Harmony API key generation/rotation/revocation with 'shown once' security warning box",
+        "Hack Monitor Table: Live request security logs featuring IP address, referrer URL, path, HTTP status code (200, 401, 403, 429), search/filter input, timestamp",
+        "Bilingual Content Manager"
+      ],
+      "data_testids": [
+        "admin-tab-content-editor",
+        "admin-tab-config",
+        "admin-tab-hack-monitor",
+        "admin-en-fr-toggle",
+        "admin-save-content-btn",
+        "admin-generate-harmony-key-btn",
+        "admin-hack-monitor-table",
+        "admin-hack-monitor-search-input"
+      ]
+    },
+    "legal_pages": {
+      "features": [
+        "Privacy Policy & Terms of Service with EN/FR toggle",
+        "Clean, highly readable typography layout with sticky section navigation"
+      ],
+      "data_testids": [
+        "privacy-policy-content",
+        "terms-of-service-content"
+      ]
+    }
+  },
+  "general_ui_ux_guidelines": {
+    "data_testid_rule": "ALL interactive and key informational elements MUST include a data-testid attribute in kebab-case format.",
+    "javascript_file_format": "All frontend react files must be Javascript (.js / .jsx).",
+    "bilingual_support": "Full EN and FR internationalization strings across all user facing components, buttons, error messages, and admin content fields.",
+    "accessibility": "WCAG 2.1 AA compliant contrast (minimum 4.5:1 ratio for normal text, 3:1 for large display text and interactive focus states). Focus ring indicator on keyboard tab navigation.",
+    "notifications": "Use Sonner toast notifications (located in src/components/ui/sonner.jsx or src/components/ui/sonner.js) for copy feedback, payment success, and settings update.",
+    "no_transparent_overlays": "Never use fully transparent backgrounds behind text or dropdown menus. Always apply high opacity backdrop blurs (e.g., bg-white/90 backdrop-blur-md border border-stone-200)."
+  },
+  "instructions_to_main_agent": [
+    "1. Build the frontend components in React (.js / .jsx) using Tailwind CSS and standard Radix/Shadcn UI primitives located in frontend/src/components/ui/.",
+    "2. Ensure header has logo placeholder, language switcher (EN/FR), login/logout, dashboard and admin menu links.",
+    "3. Ensure every form input, button, table row, tab, and card uses data-testid attributes for automated testing.",
+    "4. Add Sonner toast notifications for user interactions (e.g., code copied, gift created, login success).",
+    "5. Use warm earthy colors (#FAF7F2 background, #D95D39 warm saffron primary, #2A4736 deep forest green secondary, stone-800 text) to evoke the serene, welcoming Art of Living aesthetic.",
+    "6. Make DEMO payment clearly marked with DEMO labels as requested."
+  ]
+}
