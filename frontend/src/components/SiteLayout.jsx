@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, Outlet } from "react-router-dom";
 import { Show, UserButton } from "@clerk/react";
-import { Gift } from "lucide-react";
+import { Eye, Gift } from "lucide-react";
 import { useSite } from "@/lib/site";
 
 function LanguageSwitcher() {
@@ -77,6 +77,10 @@ export function SiteHeader() {
           </span>
         </a>
         <div className="flex items-center gap-3">
+          <a href="/visible/index.html" aria-label={t("visibleLinkLabel")} data-testid="header-visible-link"
+            className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold text-stone-800 transition-colors hover:bg-amber-50 hover:text-amber-900">
+            <Eye className="h-[17px] w-[17px]" aria-hidden="true" /><span className="hidden sm:inline">{t("visibleLink")}</span>
+          </a>
           <Link to="/gift" aria-label={t("giftButton")} data-testid="header-give-gift-link"
             className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm font-semibold text-stone-800 transition-colors hover:bg-amber-50 hover:text-amber-900">
             <Gift className="h-[17px] w-[17px]" aria-hidden="true" /><span className="hidden sm:inline">{t("giftButton")}</span>

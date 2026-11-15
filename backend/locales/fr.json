@@ -194,5 +194,7 @@
   "giftOtherAccount": "Vous êtes connecté avec un autre courriel que celui de ce cadeau.",
   "giftDemoIntegration": "L'intégration peut se faire avec Zeffy ou d'autres fournisseurs de paiement comme Stripe, PayPal, etc.",
   "giftDemoPayHint": "Cliquer sur Payer marque le paiement comme traité et crée un vrai code cadeau pour les tests.",
-  "signInShort": "Connexion"
+  "signInShort": "Connexion",
+  "visibleLink": "Visible",
+  "visibleLinkLabel": "Visible : Art of Living dans la recherche IA"
 }
