@@ -194,7 +194,5 @@
   "giftOtherAccount": "You are signed in with a different email than the one on this gift.",
   "giftDemoIntegration": "Integration can be done with Zeffy or other payment providers like Stripe, PayPal, etc.",
   "giftDemoPayHint": "Clicking Pay marks the payment as processed and creates a real gift code for testing.",
-  "signInShort": "Sign in",
-  "visibleLink": "Visible",
-  "visibleLinkLabel": "Visible: Art of Living in AI search"
+  "signInShort": "Sign in"
 }
