@@ -1,0 +1,25 @@
+{
+  "name": "visible",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "start": "node server.js",
+    "audit": "node scripts/audit.js",
+    "mcp": "node scripts/mcp-stdio.js",
+    "build:static": "node scripts/build-static.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.8.0",
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zod": "^4.6.7"
+  },
+  "type": "module"
+}

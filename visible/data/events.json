@@ -1,0 +1,21 @@
+[
+ {
+  "id": "canada-centre-retreat-guru",
+  "title": "Canada Centre retreats on Retreat Guru",
+  "platform": "Retreat Guru",
+  "url": "https://artofliving.secure.retreat.guru/",
+  "eventbriteId": null,
+  "city": "Saint-Mathieu-du-Parc",
+  "province": "QC",
+  "programId": "part-2",
+  "lang": "fr",
+  "start": "",
+  "approvedBy": "",
+  "addedAt": "2026-11-14T12:00:00Z",
+  "fromAudit": true,
+  "note": "An existing listing, used as a worked example. Checked against the 54-question audit, no new questions asked.",
+  "match": { "urls": [], "domains": ["artofliving.secure.retreat.guru", "retreat.guru"] },
+  "checks": [],
+  "stats": null
+ }
+]

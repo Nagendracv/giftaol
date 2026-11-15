@@ -1,0 +1,437 @@
+{
+ "note": "Real questions people ask about meditation and breathwork in Canada, in English and French. Unbranded ones measure discovery; branded ones are a control.",
+ "queries": [
+  {
+   "id": "q01",
+   "query": "where can I learn meditation in Toronto",
+   "city": "Toronto",
+   "province": "ON",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q02",
+   "query": "best meditation course Vancouver for beginners",
+   "city": "Vancouver",
+   "province": "BC",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q03",
+   "query": "breathwork classes Montreal",
+   "city": "Montreal",
+   "province": "QC",
+   "intent": "breathwork",
+   "branded": false
+  },
+  {
+   "id": "q04",
+   "query": "breathing techniques course for anxiety Canada",
+   "city": "Canada",
+   "province": "",
+   "intent": "anxiety",
+   "branded": false
+  },
+  {
+   "id": "q05",
+   "query": "meditation classes Calgary",
+   "city": "Calgary",
+   "province": "AB",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q06",
+   "query": "online meditation course Canada live instructor",
+   "city": "Canada",
+   "province": "",
+   "intent": "online course",
+   "branded": false
+  },
+  {
+   "id": "q07",
+   "query": "meditation classes Ottawa",
+   "city": "Ottawa",
+   "province": "ON",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q08",
+   "query": "stress relief workshop Edmonton",
+   "city": "Edmonton",
+   "province": "AB",
+   "intent": "stress",
+   "branded": false
+  },
+  {
+   "id": "q09",
+   "query": "meditation retreat Canada weekend silent",
+   "city": "Canada",
+   "province": "",
+   "intent": "retreat",
+   "branded": false
+  },
+  {
+   "id": "q10",
+   "query": "how to sleep better breathing program Canada",
+   "city": "Canada",
+   "province": "",
+   "intent": "sleep",
+   "branded": false
+  },
+  {
+   "id": "q11",
+   "query": "yoga and meditation classes Mississauga Brampton",
+   "city": "Mississauga",
+   "province": "ON",
+   "intent": "yoga",
+   "branded": false
+  },
+  {
+   "id": "q12",
+   "query": "meditation for students university Canada program",
+   "city": "Canada",
+   "province": "",
+   "intent": "students",
+   "branded": false
+  },
+  {
+   "id": "q13",
+   "query": "breathwork Toronto",
+   "city": "Toronto",
+   "province": "ON",
+   "intent": "breathwork",
+   "branded": false
+  },
+  {
+   "id": "q14",
+   "query": "meditation classes Winnipeg",
+   "city": "Winnipeg",
+   "province": "MB",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q15",
+   "query": "cours de méditation Montréal",
+   "city": "Montreal",
+   "province": "QC",
+   "intent": "learn meditation (FR)",
+   "branded": false
+  },
+  {
+   "id": "q16",
+   "query": "corporate wellness meditation workshop Canada employees",
+   "city": "Canada",
+   "province": "",
+   "intent": "corporate",
+   "branded": false
+  },
+  {
+   "id": "q17",
+   "query": "free meditation session near me Vancouver",
+   "city": "Vancouver",
+   "province": "BC",
+   "intent": "free intro",
+   "branded": false
+  },
+  {
+   "id": "q18",
+   "query": "SKY breath meditation course Toronto",
+   "city": "Toronto",
+   "province": "ON",
+   "intent": "branded",
+   "branded": true
+  },
+  {
+   "id": "q19",
+   "query": "Sudarshan Kriya course Canada",
+   "city": "Canada",
+   "province": "",
+   "intent": "branded",
+   "branded": true
+  },
+  {
+   "id": "q20",
+   "query": "Art of Living Canada courses",
+   "city": "Canada",
+   "province": "",
+   "intent": "branded",
+   "branded": true
+  },
+  {
+   "id": "q21",
+   "query": "meditation classes Halifax",
+   "city": "Halifax",
+   "province": "NS",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q22",
+   "query": "meditation classes Saskatoon",
+   "city": "Saskatoon",
+   "province": "SK",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q23",
+   "query": "meditation classes Regina",
+   "city": "Regina",
+   "province": "SK",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q24",
+   "query": "meditation classes Victoria BC",
+   "city": "Victoria",
+   "province": "BC",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q25",
+   "query": "meditation classes St. John's Newfoundland",
+   "city": "St. John's",
+   "province": "NL",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q26",
+   "query": "meditation classes Fredericton",
+   "city": "Fredericton",
+   "province": "NB",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q27",
+   "query": "meditation classes Charlottetown PEI",
+   "city": "Charlottetown",
+   "province": "PE",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q28",
+   "query": "meditation classes Hamilton Ontario",
+   "city": "Hamilton",
+   "province": "ON",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q29",
+   "query": "meditation classes Kitchener Waterloo",
+   "city": "Kitchener-Waterloo",
+   "province": "ON",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q30",
+   "query": "meditation classes Surrey BC",
+   "city": "Surrey",
+   "province": "BC",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q31",
+   "query": "meditation course Richmond Hill",
+   "city": "Richmond Hill",
+   "province": "ON",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q32",
+   "query": "meditation North Vancouver class",
+   "city": "North Vancouver",
+   "province": "BC",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q33",
+   "query": "cours de méditation Québec ville",
+   "city": "Québec City",
+   "province": "QC",
+   "intent": "learn meditation (FR)",
+   "branded": false
+  },
+  {
+   "id": "q34",
+   "query": "cours de méditation Laval",
+   "city": "Laval",
+   "province": "QC",
+   "intent": "learn meditation (FR)",
+   "branded": false
+  },
+  {
+   "id": "q35",
+   "query": "méditation Gatineau cours",
+   "city": "Gatineau",
+   "province": "QC",
+   "intent": "learn meditation (FR)",
+   "branded": false
+  },
+  {
+   "id": "q36",
+   "query": "méditation Sherbrooke cours",
+   "city": "Sherbrooke",
+   "province": "QC",
+   "intent": "learn meditation (FR)",
+   "branded": false
+  },
+  {
+   "id": "q37",
+   "query": "retraite de méditation Mauricie",
+   "city": "Mauricie",
+   "province": "QC",
+   "intent": "retreat (FR)",
+   "branded": false
+  },
+  {
+   "id": "q38",
+   "query": "atelier respiration gestion du stress Montréal",
+   "city": "Montreal",
+   "province": "QC",
+   "intent": "stress (FR)",
+   "branded": false
+  },
+  {
+   "id": "q39",
+   "query": "meditation classes Kelowna",
+   "city": "Kelowna",
+   "province": "BC",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q40",
+   "query": "meditation classes London Ontario",
+   "city": "London ON",
+   "province": "ON",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q41",
+   "query": "meditation classes Brampton",
+   "city": "Brampton",
+   "province": "ON",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q42",
+   "query": "meditation classes Markham",
+   "city": "Markham",
+   "province": "ON",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q43",
+   "query": "meditation classes Oakville Burlington",
+   "city": "Oakville",
+   "province": "ON",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q44",
+   "query": "meditation classes Edmonton",
+   "city": "Edmonton",
+   "province": "AB",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q45",
+   "query": "breathing course for anxiety Toronto",
+   "city": "Toronto",
+   "province": "ON",
+   "intent": "anxiety",
+   "branded": false
+  },
+  {
+   "id": "q46",
+   "query": "breathwork class Vancouver",
+   "city": "Vancouver",
+   "province": "BC",
+   "intent": "breathwork",
+   "branded": false
+  },
+  {
+   "id": "q47",
+   "query": "breathwork Calgary",
+   "city": "Calgary",
+   "province": "AB",
+   "intent": "breathwork",
+   "branded": false
+  },
+  {
+   "id": "q48",
+   "query": "stress management course Ottawa",
+   "city": "Ottawa",
+   "province": "ON",
+   "intent": "stress",
+   "branded": false
+  },
+  {
+   "id": "q49",
+   "query": "pranayama class Toronto",
+   "city": "Toronto",
+   "province": "ON",
+   "intent": "breathwork",
+   "branded": false
+  },
+  {
+   "id": "q50",
+   "query": "meditation classes Mississauga",
+   "city": "Mississauga",
+   "province": "ON",
+   "intent": "learn meditation",
+   "branded": false
+  },
+  {
+   "id": "q51",
+   "query": "meditation workshop for teens Canada",
+   "city": "Canada",
+   "province": "",
+   "intent": "teens",
+   "branded": false
+  },
+  {
+   "id": "q52",
+   "query": "yoga and meditation retreat Quebec",
+   "city": "Quebec",
+   "province": "QC",
+   "intent": "retreat",
+   "branded": false
+  },
+  {
+   "id": "q53",
+   "query": "Art of Living Montreal",
+   "city": "Montreal",
+   "province": "QC",
+   "intent": "branded",
+   "branded": true
+  },
+  {
+   "id": "q54",
+   "query": "Art of Living Vancouver course",
+   "city": "Vancouver",
+   "province": "BC",
+   "intent": "branded",
+   "branded": true
+  }
+ ]
+}
