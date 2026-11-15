@@ -1,0 +1,40 @@
+{
+  "summary": "First full run for Multi-City AOL Phase 1. Unit tests: 27/27 pass. New integration suite test_citysites_api.py: 27/27 pass (host->city resolution incl. case, :443, trailing dot, X-Forwarded-Host priority; unknown host 404 + WARNING + cityId=unknown log; cityId=ottawa log; /healthz any host; ?lang=fr 303 + cookie -> bonjour; /api/site; 401 without token / 403 for member on /api/admin/* and /api/users; config edit applies right away, duplicate host and bad timezone give 422, new city localhost:5699 resolves, PNG logo upload shows on / and /api/logo/<id> returns image/png, bad file type gives 400, Reset to file; text override hi/revert; role promote/demote, only-admin demote 409, bad role 403, unknown user 404). UI (Playwright, sign-in tickets): home EN/FR, SPA header EN/FR on /sign-in, Clerk form renders, member dashboard 'Coming up' with no admin menu, refresh keeps session, member /admin/logs shows admin-not-allowed; admin menu, access logs table + city/host/unknown filters + paging (Page 1 of 4 -> 2 of 4); texts hi -> 'hi ottawa' -> empty -> 'hello'; users promote/demote, demoting the only admin shows 'Keep at least one admin' toast and the select stays admin; site config edit Mississauga (curl showed 'hello test_missi ui'), site-config-error for a duplicate host and for a bad timezone, added city testui/localhost:5699 resolved, logo upload preview and curl showed /api/logo/<id>; clicked 'Reset to file' at the end (source = configuration file, Mississauga back, 5699 -> 404, hello text restored). Mobile 390px layout checked. One backend bug found: a malformed defaultBehavior returns 500.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "PUT /api/admin/config", "issue": "If defaultBehavior is not an object (e.g. \"defaultBehavior\": \"x\"), it returns 500 Internal Server Error (AttributeError in site_config._check_behavior: behavior.get). It should return 422 with a validation message. The same crash would stop startup with a traceback instead of a ConfigError."},
+      {"endpoint": "tests/test_app.py (unit tests)", "issue": "The unit tests use TestClient against the real app/DB, so they write access_logs rows into the real Mongo database (ip='testclient', hosts unknown.example/nowhere.example). That pollutes the admin access logs. Point the tests at a separate DB or mock record_visit."},
+      {"endpoint": "GET /api/logo/{id}", "issue": "The in-memory _logo_cache has no size limit (minor memory growth)."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {"flow": "Visit tracking (dev preview)", "issue": "React.StrictMode runs the track effect twice in dev, so every SPA page view is saved twice in access_logs (e.g. /admin/logs and /sign-in show 2 rows with the same second). Production builds are not affected, but preview logs are doubled. Guard it with a ref or de-dupe it.", "affected_selectors": ["[data-testid=access-log-row]"]},
+      {"flow": "Server-rendered home while signed in", "issue": "/ always shows 'Sign up / Log in', even for a signed-in user (the SPA pages show 'My dashboard' + avatar). This may be fine for Phase 1, but it is inconsistent.", "affected_selectors": ["[data-testid=auth-button]"]}
+    ],
+    "design_issues": [
+      {"screen": "Admin access logs (mobile 390px)", "issues": ["The admin nav and the logs table scroll sideways and the Host column is cut off. It works, but a stacked/card layout would read better on mobile."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_citysites_api.py", "/app/backend/tests/make_ticket.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "site_config._check_behavior: check isinstance(behavior, dict) and add a ConfigError message instead of crashing (500)",
+    "Keep the unit tests from writing to the real access_logs collection",
+    "Optional: de-dupe the /api/track call under StrictMode; optionally show the signed-in state on the server-rendered home"
+  ],
+  "critical_code_review_comments": [
+    "site_config.py _check_behavior: raw.get('defaultBehavior') or {} followed by behavior.get crashes for non-dict values (500)",
+    "roles.set_role: the 'keep at least one admin' check (count then update) is not atomic; two admins demoting each other at the same time could leave zero admins",
+    "SiteConfig.jsx upload uses the draft cityId; if an admin renames a saved city's ID without saving, the upload returns 404 'Unknown city'. Uploading also saves the server config while unsaved draft edits stay only in the browser (expected but could confuse)",
+    "clerk_auth._client_ip trusts X-Forwarded-For unconditionally (only used for the Clerk proxy, so low risk)"
+  ],
+  "updated_files": ["/app/backend/tests/test_citysites_api.py", "/app/backend/tests/make_ticket.py"],
+  "success_rate": {"backend": "98% (54/55 checks incl. unit tests; malformed defaultBehavior gives 500)", "frontend": "100% of requested flows"},
+  "test_credentials": "Used admin+clerk_test@example.com (user_3M7KxnjwE4wv1ipT9ol45VvhSRZ, admin) and member+clerk_test@example.com (user_3M7KxqOlOVbqlOF5dzQWVHZdQzC, member) from /app/memory/test_credentials.md; roles left unchanged",
+  "seed_data_creation": "None kept. Temporary cities testcity/testui, Mississauga renames and the 'hi' override were all reverted (Reset to file clicked in the UI and again through the API; overrides emptied). Two tiny PNG logo files remain in object storage/db.files (testcity, testui), and the test visits remain in access_logs.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run: cd /app/backend && python -m pytest tests/test_citysites_api.py -n 0 -q (it gets Clerk session JWTs itself through dotenv; it cleans up after itself with Reset to file and the text revert). For the UI, get a sign-in ticket with: python /app/backend/tests/make_ticket.py <user_id>, then open /sign-in?__clerk_ticket=<token>. Admin nav testids: admin-nav-access-logs/site-config/translations/users. Sign-out through the Clerk UserButton was not tested."
+}

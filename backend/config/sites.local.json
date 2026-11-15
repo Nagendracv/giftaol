@@ -1,0 +1,68 @@
+{
+  "locales": [
+    "en",
+    "fr"
+  ],
+  "defaultBehavior": {
+    "unknownHost": "not_found"
+  },
+  "cities": [
+    {
+      "cityId": "ottawa",
+      "displayName": "Ottawa",
+      "timezone": "America/Toronto",
+      "hosts": [
+        "aolottawa.ca",
+        "www.aolottawa.ca",
+        "localhost:5623",
+        "aol-local-courses--2x60l6by.preview.emergentagent.com"
+      ],
+      "nearbyCityIds": [
+        "gatineau"
+      ],
+      "defaultLocale": "en",
+      "latitude": 45.4215,
+      "longitude": -75.6972,
+      "radiusKm": 50,
+      "monthsAhead": 2
+    },
+    {
+      "cityId": "mississauga",
+      "displayName": "Mississauga",
+      "timezone": "America/Toronto",
+      "hosts": [
+        "aolmissi.ca",
+        "localhost:5624"
+      ],
+      "defaultLocale": "en",
+      "latitude": 43.589,
+      "longitude": -79.6441,
+      "radiusKm": 50,
+      "monthsAhead": 2
+    },
+    {
+      "cityId": "gatineau",
+      "displayName": "Gatineau",
+      "timezone": "America/Toronto",
+      "hosts": [],
+      "defaultLocale": "en",
+      "latitude": 45.4765,
+      "longitude": -75.7013,
+      "radiusKm": 50,
+      "monthsAhead": 2
+    },
+    {
+      "cityId": "kitchener",
+      "displayName": "Kitchener",
+      "timezone": "America/Toronto",
+      "hosts": [
+        "localhost:5625"
+      ],
+      "defaultLocale": "en",
+      "latitude": 43.4516,
+      "longitude": -80.4925,
+      "radiusKm": 60,
+      "monthsAhead": 2
+    }
+  ]
+}

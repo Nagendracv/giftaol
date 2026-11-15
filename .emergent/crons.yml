@@ -1,0 +1,8 @@
+crons:
+  - name: hourly-reminders
+    description: "Sends course reminder emails due in the next hour and refreshes the IP location database monthly"
+    cron: "0 * * * *"
+    endpoint: "{{BASE_URL}}/api/cron/hourly"
+    method: POST
+    # Cron endpoints must ack 2xx immediately; enqueue/background the actual work.
+    enabled: true

@@ -1,0 +1,47 @@
+{
+  "summary": "Rev 3 + Visit Insights tested end to end on the preview. Backend: 48/48 unit tests pass; new integration suite tests/test_rev3_api.py 22/22 pass (layout/title/footer/cookie, distance + km cookie + invalid fallback, Near me Toronto via XFF 174.114.163.181 -> 'Courses near Toronto', non-CA IP -> notice-near_failed, program filter, .ics (3 VEVENTs) + Google link + share, shared advanced course opens tab with details[open] + og:title, course_missing notice, reminder 400 bad email, real reminder to delivered@resend.dev -> pending -> confirm redirect + notice -> cron 401 wrong bearer / 200 accepted -> doc deleted + 'Sent 1 course reminder(s)' in log, cancel -> notice-reminder_cancelled / reminder_invalid, insights beacon + admin API (city/days), 401 anon / 403 member, unknown host 404, healthz). Frontend (Playwright): all requested flows work: header/title, cookie notice OK persists over reload, distance 200 auto-submit + persists, Near me fallback, program filter + tab reset, card actions (Register, ics download, Google, Share -> 'Link copied' + clipboard URL), remind form UI ('Check your inbox...' and invalid email message), shared links, French labels/titles ('Art de vivre - Partie 1', 'Art de vivre Ottawa'), /privacy /terms EN+FR, admin dashboard admin-menu-insights, /admin/insights tab views + courses table + city/days selects, other admin pages load, My dashboard link, refresh keeps session, member sees no admin menu and 'You do not have access'. One bug found and fixed: legal pages rendered every section body inside the <h2> (bold, large).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/privacy, /terms, /api/legal/{kind} (pages.paragraphs)", "issue": "FIXED by tester: locale bodies use '## Heading\\nBody' in one block, so the whole block (heading + paragraph) was wrapped in <h2>; now the first line is the h2 and the rest a <p>."},
+      {"endpoint": "POST /api/insights/event", "issue": "Unauthenticated, no rate limit, and accepts any courseId in the feed even if outside the city's area -> insights can be inflated/polluted. Also titles always recorded from the EN feed (fine) and tab_view recorded on every / and /api/home-content hit including bots."},
+      {"endpoint": "GET /api/reminders/confirm", "issue": "State-changing GET: email link scanners/prefetchers can auto-confirm. Consider a confirm page with a POST button or accept the risk."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Near me (failed lookup)", "issue": "When the IP can't be located the toggle stays 'on' (aria-pressed=true, label 'Near Ottawa instead') although results are already Ottawa, and the near_failed notice repeats on every page in the session (near cookie=1). Consider not persisting near=1 when lookup fails.", "selector": "[data-testid=near-me-button]", "priority": "LOW"},
+      {"component": "Remind form status", "issue": "Error messages ('Please enter a valid email address.', 429/503) are shown in the same green success colour (.cs-status #065F46).", "selector": "[data-testid^=course-remind-status-]", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "French home", "issues": ["Program filter option names stay English ('Art of Living Part 1 (4)') while course titles are French ('Art de vivre - Partie 1')."]},
+      {"screen": "SPA pages (dashboard/admin/no-access)", "issues": ["Footer not pinned to the bottom on short pages: a grey band shows below the white footer.", "'You do not have access to this page.' is flush to the left edge instead of inside the page container."]},
+      {"screen": "Filter form URL", "issues": ["Auto-submit adds an empty '&program=' to URLs (cosmetic)."]},
+      {"screen": "/admin/insights", "issues": ["No loading indicator while data loads/changes; tabs with 0 views (e.g. online) are omitted rather than shown as 0."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_rev3_api.py", "/app/test_reports/pytest/rev3_api.xml"],
+  "action_items": [
+    "IMPORTANT: backend/tests/test_citysites_api.py::test_config_edit_validate_reset calls DELETE /api/admin/config (Reset to file). With the admin-saved config (Kitchener) this would wipe the user's config: remove/rewrite that test (I did not run it).",
+    "Near me failure: don't keep near=1 / pressed state when the IP can't be located",
+    "Use an error colour for remind-form error messages",
+    "Optionally translate program names in the FR program filter",
+    "Optionally rate-limit / area-check POST /api/insights/event",
+    "Minor SPA layout: sticky footer (min-h-screen flex column), container for the no-access message"
+  ],
+  "critical_code_review_comments": [
+    "pages.paragraphs mis-parsed '## heading\\nbody' blocks (fixed).",
+    "insights.course_event: no auth/rate limit, no check that the course belongs to the city's area.",
+    "reminders.confirm_reminder: GET mutates; no check that the course is still upcoming (cron cleans it later, OK).",
+    "home_view: near cookie persists even after a failed lookup, causing repeated fallback notices.",
+    "Insights.jsx: no loading state; errors handled."
+  ],
+  "updated_files": ["/app/backend/pages.py", "/app/backend/tests/test_rev3_api.py"],
+  "success_rate": {"backend": "100% (48 unit + 22 integration)", "frontend": "100% of requested flows (minor UX/design issues only)"},
+  "seed_data_creation": "No seed data. Sent 2 real reminder emails to delivered@resend.dev (one consumed by the cron test and deleted, one from the UI deleted by id afterwards). A TEST_tok_ reminder doc was inserted and removed by the cancel endpoint. insight_events / access_logs got test traffic (tab views, course_open, share, calendar_add, reminder_signup for courses 1731160, 1670399, 1673840) - not deleted (TTL 90 days).",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run: cd /app/backend && python -m pytest tests/test_rev3_api.py -n 0 (sends one real email to delivered@resend.dev). Do NOT run test_citysites_api.py test_config_edit_validate_reset (resets admin config). Sign-in tickets: python tests/make_ticket.py <user_id>, then open /sign-in?__clerk_ticket=<t>. '/' on the preview is server-rendered by the backend; km cookie makes ?km=abc fall back to the cookie value, not 50.",
+  "test_credentials": "From /app/memory/test_credentials.md: admin user_3M7KxnjwE4wv1ipT9ol45VvhSRZ, member user_3M7KxqOlOVbqlOF5dzQWVHZdQzC (tickets)."
+}

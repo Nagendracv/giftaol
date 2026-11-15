@@ -1,0 +1,21 @@
+{
+  "summary": "Checked the fix for the server-rendered / header when a user is signed in. Everything passed. curl: no cookie, __client_uat=0 and __client_uat_x=0 show auth-button 'Sign up / Log in'. __client_uat=<ts> and __client_uat_<suffix>=<ts> show header-dashboard-link 'My dashboard' (href /dashboard). With lang=fr it shows 'Mon tableau de bord'. city-greeting 'hello ottawa' is always present. The Cache-Control response header is 'no-store, no-cache, must-revalidate'. UI (Playwright, Clerk sign-in ticket for the member user): landed on /dashboard. Clicking header-logo-link, page.goto('/') and a new tab in the same context all showed 'My dashboard' and no auth-button. /?lang=fr showed 'Mon tableau de bord'. Clicking 'My dashboard' opened /dashboard with 'Coming up'. After signing out through the UserButton (redirected to /sign-in), both __client_uat cookies were '0' and / showed 'Sign up / Log in' again. A fresh signed-out context showed 'Sign up / Log in'. Unit tests: 29 passed.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [{"screen": "Header", "issues": ["'My dashboard' is a filled pill button on the server-rendered / but plain text next to the UserButton on /dashboard. This is a small visual inconsistency."]}]
+  },
+  "test_report_links": ["/app/backend/tests/test_site_config.py", "/app/backend/tests/test_app.py"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "looks_signed_in() only gives a display hint. If a session has expired but the __client_uat cookie is stale and non-zero, / shows 'My dashboard' and the SPA then redirects to sign-in. This is acceptable.",
+    "Cookies on the preview domain after sign-in: __client_uat, __client_uat_lEHIiybv (domain .aol-local-courses--2x60l6by.preview.emergentagent.com), __session, __session_lEHIiybv, __clerk_db_jwt, __clerk_db_jwt_lEHIiybv, clerk_active_context. So the cookie the fix depends on is present."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "None. Used only the existing member test user, through single-use sign-in tickets.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Use backend/tests/make_ticket.py <user_id> to create Clerk sign-in tickets, then open /sign-in?__clerk_ticket=<t>. To sign out: click .cl-userButtonTrigger, then the 'Sign out' button (it is not a role=menuitem)."
+}

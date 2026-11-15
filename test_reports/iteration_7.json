@@ -1,0 +1,43 @@
+{
+  "summary": "Iteration 7 gift features tested with backend pytest (new file tests/test_gifts_account.py 6/6 pass; tests/test_gifts_api.py 8/9 pass, and the 1 failure was an email-provider 429 during resend) and with Playwright UI. All requested items work. (1) Existing account with a password: the verify page shows gift-step-2 '2 / 3', the has-account note, the 'Verification code' / 'My password' tabs, 'Change email' and 'Send a new code'. An account without a password shows the other note and only the code input. (2) New email: no tabs; the correct code signs the user in at once, the header changes to 'My dashboard' plus the user avatar, gift-signed-in-now shows the email and Continue is enabled. The code path also works for an existing member account. (3) Pay step: '3 / 3', the Demo badge and both new texts are exact. gift-pay-error clears when the amount is edited. Pay leads to confirm, 'Go to My gifts' opens /dashboard (still signed in after reload) and the gift is listed. Claim endpoint: 401 without a token, 403 for another signed-in email, 200 ready for the matching email, and the owner cannot be changed afterwards. Admin accounts get signInTicket=null. A second verify mints no new ticket. /sign-in returns 404/405. Resend email: success, then 429 on the second click; a failed send (503) left resends=[], so no cooldown. Harmony: after 32 unknown codes the IP gets 429, but a valid code still returns 200. Mobile 390px EN/FR shows a single-line 'Sign in' / 'Connexion' on '/' and on SPA pages, with no horizontal scroll. Regressions pass: signed-in member flow (straight to pay), dashboard My gifts, admin /admin/gifts, home page courses. The password sign-in through the UI could not be completed headless: Clerk bot protection probe failed with net::ERR_ABORTED, as expected per test_credentials.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "background deliver_gift_email", "issue": "With a burst of about 10 gifts in a few minutes, 6 of 9 gift emails still ended as email_status='failed' after the 5s/20s/60s backoff, because the Emergent provider 429 lasted longer than 85s. The hourly cron retry (retry_failed_gift_emails) is the safety net. I did not trigger /api/cron/hourly, because it would also resend the real user's gift FSM9… (cvnagendra@gmail.com, still email_status failed from iteration 6). The main agent should verify the cron retry manually."},
+      {"endpoint": "POST /api/gifts/checkouts (guest)", "issue": "Account enumeration: the response and GET /checkouts/{id} expose hasAccount/hasPassword for any email. This is mitigated by Turnstile and the 10/hour IP limit, and it is needed for the UX. Acceptable, but note it."},
+      {"endpoint": "verify_code / sign_in_ticket", "issue": "The admin exclusion relies on db.users role=admin. ADMIN_EMAIL (nagendracv@gmail.com) is promoted only on first sign-in, so before then a guest checkout with that email would get a ticket. Low risk (the email code is still required)."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "PasswordTab", "issue": "Every failure (including Clerk bot-protection/captcha or network errors) shows 'That password did not work...'. Consider a generic message for non-credential errors.", "selector": "[data-testid='gift-password-error']", "priority": "LOW"}
+    ],
+    "integration_issues": [
+      {"flow": "Guest /gift submit", "issue": "Right after my pytest burst, the real form showed 'Email is unavailable right now' (provider 429, already retried 2s/4s). It worked again about 5 minutes later. Not an app bug, but guest checkout fails hard while the provider is limited.", "affected_selectors": ["[data-testid='gift-form-error']"]}
+    ],
+    "design_issues": [
+      {"screen": "Verify step", "issues": ["'Change email' goes to /gift with an empty form: amount, message and recipient are lost. Consider prefilling them from the checkout."]},
+      {"screen": "Mobile header", "issues": ["The server-rendered '/' and the SPA header differ slightly (logo and button size), but both are fine and single-line."]},
+      {"screen": "Dashboard", "issues": ["The 'Coming up' placeholder is still above My gifts (unchanged)."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_gifts_account.py", "/app/backend/tests/test_gifts_api.py", "/app/test_reports/pytest/pytest_gifts_account.xml", "/app/test_reports/pytest/pytest_gifts.xml"],
+  "action_items": [
+    "Optional: verify /api/cron/hourly retries the failed gift emails (manual check; it touches a real user's gift).",
+    "Optional: show a generic error in PasswordTab when the Clerk error is not a wrong password.",
+    "Optional: keep the form values when 'Change email' is clicked."
+  ],
+  "critical_code_review_comments": [
+    "CodeTab swallows ticket sign-in errors (.catch(() => {})). This is fine because the checkout still becomes ready, but nothing is logged and the user is not told they are not signed in. ConfirmStep then sends them to /sign-in.",
+    "claim_checkout returns the checkout view for any signed-in user once the status is not 'verifying'. It does not leak the gift code (no gift attached in that branch), so it is OK.",
+    "resend_gift_email runs deliver_gift_email inline with 2s/4s sleeps (up to about 6s of blocking per request). Acceptable.",
+    "retry_failed_gift_emails sends sequentially with no delay between gifts, so it can itself trigger the provider burst limit when many emails failed. Consider a small sleep between sends."
+  ],
+  "updated_files": ["/app/backend/tests/test_gifts_api.py (sign-in endpoint now expects 404/405; asserts signInTicket)", "/app/backend/tests/test_gifts_account.py (new)"],
+  "success_rate": {"backend": "93% (14/15); the 1 failure was an external email-provider 429 on resend. Resend success plus the 429 cooldown passed in a later manual run.", "frontend": "~97%: all flows pass; the password sign-in UI could not be completed headless because of Clerk bot protection (claim endpoint verified via API)"},
+  "test_credentials": "admin+clerk_test@example.com / member+clerk_test@example.com, Test-pass-12345! (sign-in tickets via tests/make_ticket.py)",
+  "seed_data_creation": "Created TEST checkouts (3 seeded directly in Mongo with a known code, plus real ones), 9 gifts, 9 payments, 2 redemptions, and Clerk users test_guest1+clerk_test and test_ui7new+clerk_test (plus 1 users doc). All were deleted by id afterwards. gift_failed_lookups rows created during the Harmony test were deleted (filtered by time window). The pre-existing gifts (delivered@resend.dev, cvnagendra@gmail.com FSM9…) and the main agent's checkouts were not touched.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run: pytest tests/test_gifts_account.py tests/test_gifts_api.py -p no:xdist -o addopts=''. Leave 3-5 min between runs (email provider 429). For UI verify tests, seed a checkout with /tmp/mkco.py <email> <hasAccount 0/1> <hasPassword 0/1> (code 123456) and type the OTP with the keyboard. Clerk password sign-in is blocked headless (protect probe ERR_ABORTED). Clean up with /tmp/cleanup.py-style deletion by id."
+}

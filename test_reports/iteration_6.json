@@ -1,0 +1,52 @@
+{
+  "summary": "Gift feature tested end to end: backend pytest (9/9 pass in the final run) plus Playwright UI for the guest flow, signed-in member flow, dashboard, admin /admin/gifts, French texts and regressions. All core flows work: header link on the server-rendered home page and on SPA pages, form validation, Turnstile test widget, verify step, demo payment, code format, copy with the security dialog, next steps (5), one-time sign-in ticket to /dashboard (this worked in headless), My gifts (masked code and reveal, status, uses, details), Account section (change password opens the Clerk profile, log out), Harmony lookup and redeem with duplicate reference, 409, lock with 423, unlock and revoke, admin settings and 403 for non-admins, and FR. Main problem: the Emergent managed email provider returns 429 'email rate limit exceeded' after a small burst of sends. Then guest checkout returns 503 (the verification email cannot be sent) and gift emails are marked failed for good after about 8s of retries.",
+  "backend_issues": {
+    "critical": [
+      {"endpoint": "POST /api/gifts/checkouts (guest) and background deliver_gift_email", "issue": "Emergent email API returns 429 rate_limited after about 4-6 emails within a few seconds; the limit cleared after about 3-5 minutes. Guest checkout then fails with 503 'Email is unavailable right now', so the real UI guest submit failed twice in a row. Gift emails retry only 3 times with 2s/6s backoff and then stay email_status='failed' for good, with no later retry job. This also hit a real user's gift (code FSM9…, giver cvnagendra@gmail.com, created 06:10 while my tests ran): its email_status is now 'failed'. I did NOT change that record; the user can press Resend email.", "priority": "HIGH"}
+    ],
+    "minor": [
+      {"endpoint": "POST /api/gifts/mine/{id}/resend-email", "issue": "The resend timestamp is saved BEFORE sending. If the send fails (503), the user still hits the 10-minute cooldown (429 'Please wait a few minutes') on the next click and cannot retry. Save the resend only after a successful send. The endpoint also blocks for about 8s while it retries."},
+      {"endpoint": "gift_admin._notify (redemption email)", "issue": "Retries 3 times with no backoff (all within about 200ms), so a 429 always ends in failure."},
+      {"endpoint": "emailer / gift logs", "issue": "Warnings log an empty exception text ('attempt 2 failed: '), because EmailUnavailable() is raised without a message. Add the status and body."},
+      {"endpoint": "POST /api/gifts/checkouts/{id}/sign-in", "issue": "Anyone who has the checkout URL (/gift/<id>) can get a one-time Clerk sign-in ticket for the giver once the gift is paid, until it is used. Consider binding it to the same browser (for example a cookie set at verify time) or a short expiry after payment."},
+      {"endpoint": "gift_admin._find", "issue": "Once an IP has 30 unknown-code lookups in an hour, it is blocked for VALID codes too (the check runs before the code lookup). Probably intended, but Harmony servers share one IP."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "PayStep", "issue": "The out-of-range error (gift-pay-error) stays visible after the user corrects the amount, until Pay is clicked again.", "selector": "[data-testid='gift-pay-error']", "priority": "LOW"},
+      {"component": "MyGifts / Resend email", "issue": "After a 503 failure, the second click shows both the 'Please wait a few minutes' toast and the earlier error toast, which is confusing (caused by the backend cooldown bug).", "selector": "[data-testid^='gift-resend-email-']", "priority": "LOW"}
+    ],
+    "integration_issues": [
+      {"flow": "Guest /gift submit", "issue": "Shows 'Email is unavailable right now. Please try again later.' when the email provider rate-limits (see backend critical).", "affected_selectors": ["[data-testid='gift-form-error']"]}
+    ],
+    "design_issues": [
+      {"screen": "Mobile header (390px, FR)", "issues": ["The 'S'inscrire / Se connecter' button wraps onto 3 lines and makes the header very tall. Use a shorter label or an icon on mobile."]},
+      {"screen": "Account > Change password", "issues": ["Opens the Clerk UserProfile on the Profile tab, not the Security (password) tab."]},
+      {"screen": "Dashboard", "issues": ["The 'Coming up – Courses and events will appear here soon' placeholder sits above My gifts (from before this feature)."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_gifts_api.py", "/app/test_reports/pytest/pytest_gifts.xml"],
+  "action_items": [
+    "Make email delivery resilient to provider 429: longer exponential backoff or honour Retry-After, plus a background retry job for gifts with email_status failed/pending. Consider not failing guest checkout hard (allow 'Send a new code' later).",
+    "resend-email: record the resend timestamp only after a successful send, or roll it back on failure.",
+    "Add backoff to the redemption email retries, and log the error text in EmailUnavailable.",
+    "Clear gift-pay-error when the amount changes.",
+    "Optional: open the Clerk profile on the security tab for Change password; fix the mobile FR sign-in button wrapping."
+  ],
+  "critical_code_review_comments": [
+    "gifts.py resend_gift_email: $set resends before deliver_gift_email means a failed send uses up the cooldown.",
+    "deliver_gift_email runs inline in the resend request, with sleeps of up to 8s, which blocks the HTTP response.",
+    "checkout_sign_in: the bearer capability is the checkout id in the URL; tie it to the session or browser.",
+    "Admin Gifts.jsx: the search calls the API on every keystroke (no debounce); admin labels are hard-coded in English (acceptable for admin).",
+    "Admin settings PUT stores presets that are outside the min/max range; they are only filtered in /gifts/config (fine, but the admin is not told)."
+  ],
+  "updated_files": ["/app/backend/tests/test_gifts_api.py"],
+  "success_rate": {"backend": "100% (9/9) on the final run; 1 failure in the first run was caused by the email provider 429", "frontend": "~95% – all requested flows pass; guest submit through the real form was blocked by the email 429, and the verify/pay/confirm UI was then tested on a checkout seeded directly in Mongo"},
+  "test_credentials": "admin+clerk_test@example.com / member+clerk_test@example.com (Test-pass-12345!) via Clerk sign-in tickets (tests/make_ticket.py). Bearer tokens: /v1/sessions/{id}/tokens needs a JSON body (Content-Type application/json), otherwise 415.",
+  "seed_data_creation": "Created TEST gifts, checkouts, payments and redemptions, plus Clerk users test_guest1+clerk_test and test_ui4+clerk_test. All were deleted by id afterwards (14 gifts, 15 checkouts, 14 payments, 4 redemptions, 2 Clerk users, 1 users doc). The gift_settings doc now exists with the default values (it was absent before). The main agent's gift GBWQ… and the real user's gift FSM9… were left untouched, but FSM9… email_status became 'failed' during my test window because of the shared email rate limit.",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Run pytest tests/test_gifts_api.py -p no:xdist -o addopts=''. Space out runs by about 3-5 min, or the Emergent email 429 causes 503s. The Turnstile test token 'XXXX.DUMMY.TOKEN.XXXX' passes siteverify. For UI verify tests, insert a gift_checkouts doc with a known verify_hash (see /tmp/mkco.py pattern), because the browser tool has no pymongo. Use keyboard typing for the InputOTP (fill() appends). The guest 'Go to My gifts' ticket sign-in works in headless.",
+  "rca of the issue": "Email failures: the Emergent email API returned HTTP 429 {'error':'Rate limited','message':'email rate limit exceeded'} (backend.err.log). The backend retries for only about 8s total (2s, 6s) and then marks the email failed with no later retry. The guest checkout sends the verification email synchronously, deletes the checkout on failure and returns 503. Repro: create about 5 gifts quickly, then submit a guest checkout. Fix: queue emails with backoff and a retry job; honour Retry-After."
+}

@@ -1,0 +1,32 @@
+{
+  "summary": "Tested the course tabs that replace 'hello <city>'. All requested items pass. Unit tests: 38 passed. Integration tests: test_courses_api.py has 9 new tests and test_citysites_api.py has 27 updated tests, 36/36 passing. On the preview (Ottawa), courses-heading reads 'Courses in and around Ottawa'. tab-newcomer has aria-current=page by default. Counts were newcomer 5, advanced 2, online 88. I checked these counts against my own pull of the Unity API (4 pages, 305 courses, offset = page number) using the same haversine, window and mctype filters, and they match exactly. The newcomer list shows Gatineau 2 km, Ottawa 10 km (x2), Stittsville 23 km and Kanata 23 km, sorted by date. Expanding a card shows Schedule (local time), Venue, Teachers, Fee (with student and repeater prices), Language and Contact, plus a Register link to enroll.artofliving.org/ca-en/programs/... with target=_blank and rel=noopener. Clicking again collapses the card. ?tab=advanced shows only VTP and Part 2. ?tab=online shows only online courses, with 'Organiser near Ottawa' courses first. The EN/FR switch keeps the tab (/?lang=fr&tab=online answers 303 to /?tab=online) and shows French tabs, dates ('mar. 17 nov.') and 24h times ('11 h 00'). An unknown tab falls back to newcomer. Admin /admin/sites: radius 0, months 13 and an empty longitude each showed site-config-error with a clear message. Saving radius 200 and months 3 worked: the subheading read 'within 200 km ... next 3 months' and the counts went to 17/3/99, now including Montreal and Pointe-Claire. 'Reset to file' brought back the configuration file and 50 km / 2 months. Caching: 'Fetched 300 courses from the Unity API in 3 page(s)' is logged once per backend process start, and once more only when monthsAhead goes above the cached window. Across about 170 GET / requests there were no other fetches. /api/home-content?tab=online returns {html, css}, and an unknown host gets 404. Regression: unknown host 404, /healthz 200, 'My dashboard' in the header when signed in, and the admin APIs (config, logs, texts, users, roles) all pass. The mobile layout (390px) does not scroll sideways.",
+  "backend_issues": {"critical": [], "minor": [
+    {"endpoint": "GET / (course details)", "issue": "The 'Schedule' lines come straight from the API's course_complex_timing in English 12h format ('Fri : 06:00 PM - 08:00 PM'), even on the FR page, which otherwise uses 24h times. Course titles also stay in English because the feed is language=en-ca."}
+  ]},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Home (mobile 390px)", "issues": ["The tab bar scrolls sideways and 'Advanced courses' is cut off with no scroll hint (fade or arrow), so the Online tab is easy to miss."]},
+      {"screen": "Home", "issues": ["The API labels a K1T postcode venue (3028 Victoria Heights Cres) as 'Ottawa (Centre Town)' 10 km away. This is a data issue in the API, not an app bug."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_courses_api.py", "/app/backend/tests/test_citysites_api.py", "/app/backend/tests/test_courses.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Optional: show the Schedule times in the locale's format on the FR page, or label them as provided by the organiser.",
+    "Optional: add a scroll hint to the course tabs on mobile."
+  ],
+  "critical_code_review_comments": [
+    "CourseFeed.get holds the asyncio lock for the whole fetch (up to 30 pages x 30s timeout). On a cold cache or after expiry, every home request waits for the fetch. Consider serving stale data while one background refresh runs once the TTL has passed.",
+    "Every backend hot reload or restart starts with an empty cache and fetches again. This is fine in production but adds API calls during development.",
+    "_fetch stops early when the last start_date of a page is past the horizon. This depends on order_by=start_date in UNITY_COURSES_API_URL; keep that parameter in the env URL.",
+    "select_courses leaves out courses that have already started (start < now), so a multi-day course running today disappears. Probably intended.",
+    "After 'Reset to file', the feed keeps the larger cached window (_months=3). This is harmless."
+  ],
+  "updated_files": ["/app/backend/tests/test_citysites_api.py (city-greeting and 'hello' assertions replaced with courses-heading; the text override test now uses coursesHeading)", "/app/backend/tests/test_courses_api.py (new)"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "None. Admin config edits were reverted with DELETE /api/admin/config (source=file confirmed). The text override was reset.",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Run with -n 0: python -m pytest tests/test_courses_api.py tests/test_citysites_api.py -n 0. Both modules change the admin config and must not run in parallel. Editing any file under /app/backend (tests included) triggers a uvicorn reload and one Unity fetch. The Unity API needs a User-Agent header; offset is a page number. Create Clerk sign-in tickets with backend/tests/make_ticket.py <user_id>. The admin logs/texts/users pages were checked through their APIs only; the UI selector 'main' did not exist there."
+}

@@ -1,0 +1,41 @@
+{
+  "summary": "Tested the Near me -> city picker change on the preview (Ottawa host). Unit tests 49/49 pass; tests/test_rev3_api.py 22/22 pass. UI (Playwright + curl): no Near me button; the form has place-input (prefilled 'Ottawa', datalist of 515 cities), distance/program selects (they no longer auto-submit: the URL stays the same after a change) and Apply. 'Kitchener, ON' + 100 km + Apply -> 'Courses near Kitchener, ON', subheading 'within 100 km', first card Kitchener Central 2 km away. The place cookie persists across reload. 'montreal' -> 'Montréal, QC'. 'Atlantis' -> notice-place_not_found + Ottawa courses. 'Ottawa' -> 'Courses in and around Ottawa'. The online tab shows 'Organiser near Kitchener, ON' badges first. The program filter works after Apply. FR: Ville/Distance/Programme/Appliquer and a French not-found notice. Footer GeoNames credit is on the server-rendered pages and the SPA, with no DB-IP text anywhere. Privacy has a 'Your city' section. /admin/insights loads for the admin ticket. Without a cookie, the shared link opens expanded with calendar/share/remind. 2 bugs: (1) the URL still contains an empty 'program=' after Apply; (2) a shared course link opened by a visitor whose place cookie is another city shows course_missing.",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "GET /?course=<id> (home_view.build_view)", "issue": "The shared course is looked up only within the visitor's chosen place area. With the cookie place='Kitchener, ON', /?course=1731160 (an Ottawa course) shows notice-course_missing and does not open the course. Repro: curl -b 'place=Kitchener, ON' <preview>/?course=1731160. Fix: when ?course is given, fall back to the site's own city area (or search all courses) if it is not found in the chosen area."},
+      {"endpoint": "GET /?place=Ottawa, ON", "issue": "Picking 'Ottawa, ON' from the datalist gives 'Courses near Ottawa, ON' (and stores that cookie) instead of 'Courses in and around Ottawa'. _norm(text) is compared only with displayName 'Ottawa', not with the matched place. Compare the found place to the site city, e.g. by label or name/coords."},
+      {"endpoint": "find_place", "issue": "'Kitchener ON' / 'kitchener on' (no comma) is not found, so the place_not_found notice shows. _norm keeps the comma as a token. Consider removing commas when building the key."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "Filter form Apply", "issue": "The URL includes an empty program= (e.g. /?tab=newcomer&place=Kitchener%2C+ON&km=100&program=), which the review request says must not happen. site.js only disables empty selects in the old [data-autosubmit] change handler, and no element has that attribute any more. Fix: add a submit handler for [data-testid=course-filters] (or a data attribute) that disables empty selects before submit, or leave out the name on the 'All programs' option.", "selector": "[data-testid=apply-filters-button]", "priority": "MEDIUM"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Home mobile 390px", "issues": ["The city input (min-width 220px) and the selects don't fill the row, so the controls look ragged. Consider width:100% on small screens."]},
+      {"screen": "FR notice", "issues": ["'voici les cours près de Ottawa': French elision would give 'près d'Ottawa' (cosmetic)."]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/test_rev3_api.py"],
+  "action_items": [
+    "Drop the empty program= on Apply (submit handler that disables empty selects, or similar)",
+    "Shared link /?course=<id>: also search the site's own area (or all courses) when the visitor's chosen place does not contain the course",
+    "Treat 'Ottawa, ON' (the site's own city picked from the datalist) as the home city",
+    "Optional: match 'Kitchener ON' without a comma; full-width controls on mobile"
+  ],
+  "critical_code_review_comments": [
+    "home_view.build_view: the course lookup uses the place-adjusted area, so shared links break for visitors with a different city cookie.",
+    "home_view.build_view: the home-city check compares the typed text only with displayName, so the datalist label for the home city counts as a different place.",
+    "site.js: the data-autosubmit handler is now dead code, and the empty-select cleanup is lost with it.",
+    "A failed place lookup resets the place cookie to '' (fine, but the user's previous city is lost)."
+  ],
+  "updated_files": ["/app/test_reports/iteration_5.json"],
+  "success_rate": {"backend": "100% (49 unit + 22 integration)", "frontend": "~85% (empty program= in URL; shared link with another city's cookie)"},
+  "seed_data_creation": "None. Did not touch the admin config. Test traffic added insight_events/access_logs (TTL).",
+  "retest_needed": true,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Ottawa course id 1731160. Repro the shared link bug: curl -b 'place=Kitchener, ON' <preview>/?course=1731160 -> notice-course_missing. Admin ticket: python tests/make_ticket.py user_3M7KxnjwE4wv1ipT9ol45VvhSRZ. Do not run test_citysites_api.py reset test.",
+  "test_credentials": "From /app/memory/test_credentials.md (admin ticket used)."
+}

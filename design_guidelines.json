@@ -1,0 +1,117 @@
+{
+  "theme": "Clean, calm and minimal with organic warmth (Art of Living)",
+  "context": "Multi-tenant Art of Living city sites (e.g., Ottawa, Montreal, Toronto). Server-rendered public pages with React SPA dashboard/admin.",
+  "typography": {
+    "google_fonts": [
+      "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap",
+      "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap"
+    ],
+    "heading_font": "'Plus Jakarta Sans', -apple-system, sans-serif",
+    "body_font": "'DM Sans', -apple-system, sans-serif",
+    "sizes": {
+      "h1": "text-3xl sm:text-4xl (28px - 36px), font-bold tracking-tight",
+      "h2": "text-2xl sm:text-3xl (24px - 30px), font-semibold",
+      "h3": "text-xl sm:text-2xl (20px - 24px), font-medium",
+      "body": "text-base (16px), line-height 1.6",
+      "small": "text-sm (14px), font-medium"
+    }
+  },
+  "colors": {
+    "css_variables": {
+      "--background": "#FAF9F6",
+      "--surface": "#FFFFFF",
+      "--surface-hover": "#F3F4F6",
+      "--primary": "#D97706",
+      "--primary-hover": "#B45309",
+      "--primary-light": "#FEF3C7",
+      "--text-primary": "#1C1917",
+      "--text-secondary": "#57534E",
+      "--text-muted": "#78716C",
+      "--border": "#E7E5E4",
+      "--border-strong": "#D6D3D1",
+      "--accent-teal": "#0D9488",
+      "--accent-sky": "#0284C7",
+      "--status-success": "#16A34A",
+      "--status-warning": "#CA8A04",
+      "--status-error": "#DC2626"
+    },
+    "wcag_compliance": "WCAG 2.1 AA - Minimum contrast 4.5:1 for normal text and 3:1 for large UI components/headers."
+  },
+  "header_layout_spec": {
+    "background": "#FFFFFF with 1px bottom border (#E7E5E4) and subtle shadow",
+    "logo_area": "Top-left. Golden Sun SVG with two swans icon + text 'THE ART OF LIVING' (or city-overridden custom logo). Height: 40px.",
+    "top_right_actions": "Flex container with EN/FR language switcher toggle (active item: bg-amber-100 text-amber-900 font-semibold) + 'Sign up / Log in' Clerk button",
+    "desktop_nav": "Sticky header with z-index 40, non-transparent background to prevent text bleed during scroll",
+    "data_testids": {
+      "header": "data-testid='main-header'",
+      "logo": "data-testid='header-logo'",
+      "language_switcher": "data-testid='language-switcher'",
+      "lang_en": "data-testid='lang-switch-en'",
+      "lang_fr": "data-testid='lang-switch-fr'",
+      "auth_button": "data-testid='auth-button'"
+    }
+  },
+  "home_page_spec": {
+    "type": "Server-rendered HTML with minimal inline CSS",
+    "layout": "Clean full-width container with centered main section, generous whitespace (py-16, px-6)",
+    "hello_text_styling": "font-family: 'Plus Jakarta Sans', sans-serif; font-size: 32px; font-weight: 600; color: #1C1917; text-transform: lowercase; letter-spacing: -0.02em; padding: 4rem 1.5rem; text-align: left;",
+    "content": "Only displays 'hello {city}' (e.g. hello ottawa) inside clean container",
+    "data_testids": {
+      "city_greeting": "data-testid='city-greeting'"
+    }
+  },
+  "unknown_host_404_spec": {
+    "title": "This site is not configured",
+    "layout": "Centered card on #FAF9F6 background with golden/warm minimal icon",
+    "description": "The requested domain or city site is not configured in the system.",
+    "data_testids": {
+      "not_found_card": "data-testid='not-found-container'",
+      "not_found_title": "data-testid='not-found-title'"
+    }
+  },
+  "admin_layout_spec": {
+    "structure": "Responsive sidebar or top tabs navigation (Access Logs, Site Configuration, Text & Languages, Users & Admins)",
+    "sidebar_style": "Background #FFFFFF, border-r #E7E5E4, active tab bg-amber-50 text-amber-900 border-l-4 border-amber-600",
+    "dashboard_heading": "Signed in dashboard header shows 'Coming up' section with upcoming city events card grid",
+    "data_testids": {
+      "dashboard_container": "data-testid='user-dashboard'",
+      "dashboard_coming_up": "data-testid='dashboard-coming-up-title'",
+      "admin_nav_access_logs": "data-testid='admin-nav-access-logs'",
+      "admin_nav_site_config": "data-testid='admin-nav-site-config'",
+      "admin_nav_translations": "data-testid='admin-nav-translations'",
+      "admin_nav_users": "data-testid='admin-nav-users'"
+    }
+  },
+  "table_and_form_styles": {
+    "tables": "Dense, clean design. Header: bg-stone-100 text-stone-700 text-xs uppercase tracking-wider. Rows: hover bg-stone-50 transition-colors border-b border-stone-200.",
+    "access_logs_table": "Columns: Time, IP, Host, Path, City. Filters by city/host dropdown + search input + pagination controls.",
+    "side_by_side_editor": "Text & Languages module: EN and FR side-by-side textareas/inputs with real-time dirty status indicator and save button.",
+    "site_config_forms": "Form fields for cityId, displayName, timezone, hosts list, nearby cities, contact email/phone, default locale, and logo upload preview.",
+    "user_management": "User table with role badge (User/Admin), Promote to Admin / Demote button with confirmation dialog.",
+    "data_testids": {
+      "access_logs_table": "data-testid='access-logs-table'",
+      "filter_city_select": "data-testid='filter-city-select'",
+      "filter_host_input": "data-testid='filter-host-input'",
+      "pagination_prev": "data-testid='pagination-prev-button'",
+      "pagination_next": "data-testid='pagination-next-button'",
+      "site_config_form": "data-testid='site-config-form'",
+      "save_site_config": "data-testid='save-site-config-button'",
+      "translation_editor": "data-testid='translation-editor-form'",
+      "save_translations": "data-testid='save-translations-button'",
+      "users_table": "data-testid='users-table'",
+      "promote_demote_btn": "data-testid='promote-demote-user-button'"
+    }
+  },
+  "image_urls": {
+    "zen_meditation_1": "https://images.unsplash.com/photo-1780023501661-171e04f52dc8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTJ8MHwxfHNlYXJjaHszfHxhcnQlMjBvZiUyMGxpdmluZyUyMG1lZGl0YXRpb24lMjBsb2dvfGVufDB8fHx8MTc5NDY5NTc2OHww&ixlib=rb-4.1.0&q=85",
+    "serene_buddha_2": "https://images.unsplash.com/photo-1782912239849-b36405621402?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NTJ8MHwxfHNlYXJjaHDFfHxhcnQlMjBvZiUyMGxpdmluZyUyMG1lZGl0YXRpb24lMjBsb2dvfGVufDB8fHx8MTc5NDY5NTc2OHww&ixlib=rb-4.1.0&q=85"
+  },
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "Do NOT use transition: all in CSS/Tailwind classes. Use targeted transition-colors or transition-opacity.",
+    "Ensure all interactive components have explicit data-testid attributes for automated verification.",
+    "Maintain strict WCAG 2.1 AA contrast levels (text-stone-900 on white or warm sand background).",
+    "Never use transparent header backgrounds without background color or backdrop-blur.",
+    "All React code files must use standard JavaScript (.js / .jsx) extensions.",
+    "Ensure the server-rendered home page uses plain HTML with minimal inline styles matching #FAF9F6 background and #1C1917 typography."
+  ]
+}

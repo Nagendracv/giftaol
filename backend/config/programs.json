@@ -1,0 +1,22 @@
+{
+  "newcomer": [
+    {"slug": "part-1", "name": "Art of Living Part 1", "names": {"fr": "Art de vivre - Partie 1"}, "mctypes": [1, 58, 517, 736, 737, 759, 1301]},
+    {"slug": "sahaj", "name": "Sahaj Samadhi Meditation", "mctypes": [3, 1303]},
+    {"slug": "art-excel", "name": "ART Excel", "mctypes": [4]},
+    {"slug": "yes", "name": "YES!", "mctypes": [9]},
+    {"slug": "sri-sri-yoga", "name": "Sri Sri Yoga Program", "mctypes": [15, 5009, 1315]},
+    {"slug": "sky-retreat", "name": "SKY Happiness Retreat", "mctypes": [5038, 1669, 1670]},
+    {"slug": "deep-sleep", "name": "Deep Sleep & Anxiety Relief", "mctypes": [5102]},
+    {"slug": "ip-junior", "name": "IP Junior Program", "mctypes": [5103]},
+    {"slug": "ip-kids", "name": "IP Kids Program", "mctypes": [5104]},
+    {"slug": "ip-teens", "name": "IP Teens Program", "mctypes": [5105]}
+  ],
+  "advanced": [
+    {"slug": "part-2", "name": "Art of Living Part 2", "names": {"fr": "Art de vivre - Partie 2"}, "mctypes": [2, 802, 1302, 1502]},
+    {"slug": "dsn", "name": "DSN", "mctypes": [14]},
+    {"slug": "vtp", "name": "VTP", "mctypes": [537]},
+    {"slug": "deep-dive", "name": "Deep Dive Retreat", "mctypes": [542, 1342]},
+    {"slug": "shakti-kriya", "name": "Shakti Kriya", "mctypes": [544]},
+    {"slug": "sanyam", "name": "Sanyam", "mctypes": [5023]}
+  ]
+}
